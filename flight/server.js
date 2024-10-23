@@ -16,6 +16,12 @@ const flightSchema = new mongoose.Schema({
 });
 const Flight = mongoose.model('Flight', flightSchema);
 
+const passengerSchema = new mongoose.Schema({
+    name: String,
+    flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight' },
+});
+const Passenger = mongoose.model('Passenger', passengerSchema);
+
 app.post('/api/flights', async (req, res) => {
     const flight = new Flight(req.body);
     await flight.save();
@@ -25,6 +31,11 @@ app.post('/api/flights', async (req, res) => {
 app.get('/api/flights', async (req, res) => {
     const flights = await Flight.find().populate('airlineId');
     res.send(flights);
+});
+
+app.get('/api/flights/:id/passengers', async (req, res) => {
+    const passengers = await Passenger.find({ flightId: req.params.id });
+    res.send(passengers);
 });
 
 app.listen(3002, () => {
